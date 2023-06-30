@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>New Tab Homepage</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    #clock {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    #motivational-message {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    #todo-list {
+      margin-bottom: 20px;
+    }
+
+    #todo-list ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #todo-list li {
+      margin-bottom: 5px;
+    }
+
+    #links-list {
+      margin-bottom: 20px;
+    }
+
+    #links-list ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #links-list li {
+      margin-bottom: 5px;
+    }
+
+    #motivational-quote {
+      font-size: 16px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div id="clock"></div>
+  <div id="motivational-message"></div>
+  <div id="todo-list">
+    <h3>Todo List</h3>
+    <ul id="todo-items"></ul>
+    <input type="text" id="new-todo" placeholder="Enter a new todo">
+    <button id="add-todo">Add</button>
+  </div>
+  <div id="links-list">
+    <h3>Links</h3>
+    <ul id="link-items"></ul>
+    <input type="text" id="new-link" placeholder="Enter a new link">
+    <button id="add-link">Add</button>
+  </div>
+  <div id="motivational-quote"></div>
+
+  <script>
+    // Get current username
+    var username = prompt("Please enter your username:");
+    if (username === null || username === "") {
+      username = "User";
+    }
+
+    // Display current time
+    function displayTime() {
+      var date = new Date();
+      var time = date.toLocaleTimeString();
+      document.getElementById("clock").textContent = time;
+    }
+
+    // Display motivational message
+    function displayMotivationalMessage() {
+      var messages = [
+        "Stay positive, " + username + "!",
+        "You're doing great, " + username + "!",
+        "Believe in yourself, " + username + "!"
+      ];
+      var message = messages[Math.floor(Math.random() * messages.length)];
+      document.getElementById("motivational-message").textContent = message;
+    }
+
+    // Display todo list
+    function displayTodoList() {
+      var todoItems = getCookie("todoItems");
+      if (todoItems) {
+        var todoList = JSON.parse(todoItems);
+        var todoListHTML = "";
+        for (var i = 0; i < todoList.length; i++) {
+          todoListHTML += "<li>" + todoList[i] + "</li>";
+        }
+        document.getElementById("todo-items").innerHTML = todoListHTML;
+      }
+    }
+
+    // Add new todo
+    function addTodo() {
+      var todoInput = document.getElementById("new-todo");
+      var todoValue = todoInput.value;
+      if (todoValue.trim() !== "") {
+        var todoItems = getCookie("todoItems");
+        var todoList = todoItems ? JSON.parse(todoItems) : [];
+        todoList.push(todoValue);
+        setCookie("todoItems", JSON.stringify(todoList), 365);
+        todoInput.value = "";
+        displayTodoList();
+      }
+    }
+
+    // Display links list
+    function displayLinksList() {
+      var linkItems = getCookie("linkItems");
+      if (linkItems) {
+        var linkList = JSON.parse(linkItems);
+        var linkListHTML = "";
+        for (var i = 0; i < linkList.length; i++) {
+          linkListHTML += "<li><a href='" + linkList[i] + "'>" + linkList[i] + "</a></li>";
+        }
+        document.getElementById("link-items").innerHTML = linkListHTML;
+      }
+    }
+
+    // Add new link
+    function addLink() {
+      var linkInput = document.getElementById("new-link");
+      var linkValue = linkInput.value;
+      if (linkValue.trim() !== "") {
+        var linkItems = getCookie("linkItems");
+        var linkList = linkItems ? JSON.parse(linkItems) : [];
+        linkList.push(linkValue);
+        setCookie("linkItems", JSON.stringify(linkList), 365);
+        linkInput.value = "";
+        displayLinksList();
+      }
+    }
+
+    // Get cookie value
+    function getCookie(name) {
+      var cookieName = name + "=";
+      var cookies = document.cookie.split(";");
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        if (cookie.indexOf(cookieName) === 0) {
+          return cookie.substring(cookieName.length, cookie.length);
+        }
+      }
+      return null;
+    }
+
+    // Set cookie value
+    function setCookie(name, value, days) {
+      var expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + days);
+      var cookieValue = name + "=" + value + "; expires=" + expirationDate.toUTCString() + "; path=/";
+      document.cookie = cookieValue;
+    }
+
+    // Display motivational quote
+    function displayMotivationalQuote() {
+      var quotes = [
+        { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
+        { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+        { text: "Success is not final, failure is not fatal: It is the courage to continue that counts.", author: "Winston Churchill" }
+      ];
+      var quote = quotes[Math.floor(Math.random() * quotes.length)];
+      var quoteText = '"' + quote.text + '"';
+      var quoteAuthor = "- " + quote.author;
+      document.getElementById("motivational-quote").innerHTML = "<p>" + quoteText + "</p><p>" + quoteAuthor + "</p>";
+    }
+
+    // Initialize the homepage
+    function initHomepage() {
+      displayTime();
+      displayMotivationalMessage();
+      displayTodoList();
+      displayLinksList();
+      displayMotivationalQuote();
+
+      // Add event listeners for adding todo and link items
+      document.getElementById("add-todo").addEventListener("click", addTodo);
+      document.getElementById("add-link").addEventListener("click", addLink);
+    }
+
+    // Update clock every second
+    setInterval(displayTime, 1000);
+
+    // Initialize the homepage when the page loads
+    window.addEventListener("load", initHomepage);
+  </script>
+</body>
+</html>
